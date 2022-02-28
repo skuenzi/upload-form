@@ -1,23 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import {useState} from 'react'
+import axios from 'axios'
+
 
 function App() {
+  const [selectedFile, setSelectedFile] = useState()
+  const [fileUploaded, setFileUploaded] = useState(false)
+  const [selectedFileName, setSelectedFileName] = useState()
+
+  const handleChange = (e) => {
+    setSelectedFile(e.target.files[0])
+  }
+
+  const handleClick = () => {
+    const data = new FormData()
+    data.append('file', selectedFile)
+
+    axios.post('http://localhost:8000/upload', data)
+    .then(res => {
+      console.log(res)
+      setFileUploaded(true)
+      setSelectedFileName(res.data.filename)
+    })
+  }
+  console.log(selectedFileName)
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <input type='file' name='file' onChange={handleChange}/>
+      <button type='button' onClick={handleClick}>upload</button>
+      {fileUploaded && <img src={`/images/${selectedFileName}`} style={{height: '200px', width:'200px'}}/>}
     </div>
   );
 }
